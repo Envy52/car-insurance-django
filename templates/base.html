@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Car Insurance</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<video autoplay muted loop id="bg-video">
+    <source src="{% static 'video/bmw_m5_f90.mp4' %}" type="video/mp4">
+</video>
+<audio id="bg-music" autoplay loop>
+    <source src="{% static 'audio/background.mp3' %}" type="audio/mpeg">
+</audio>
+<nav>
+    {% if user.is_authenticated %}
+    <div class="nav-left">
+        Привет, {{ user.username }}
+    </div>
+    <div class="nav-right">
+        <button class="music-btn" onclick="toggleMusic()">🔊</button>
+        <a href="{% url 'insurance_list' %}" class="nav-link">Страховки</a>
+        <a href="{% url 'profile' %}" class="nav-link">Профиль</a>
+        <form method="post" action="{% url 'logout' %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="logout-button nav-link">Выйти</button>
+        </form>
+    </div>
+    {% else %}
+    <div class="nav-right">
+        <a href="{% url 'login' %}" class="nav-link">Войти</a>
+        <a href="{% url 'register' %}" class="nav-link">Регистрация</a>
+    </div>
+    {% endif %}
+</nav>
+
+{% block content %}{% endblock %}
+
+<script>
+function toggleMusic() {
+    const music = document.getElementById('bg-music');
+    const btn = document.querySelector('.music-btn');
+
+    if (music.muted) {
+        music.muted = false;
+        music.play();
+        btn.textContent = '🔊';
+        localStorage.setItem('musicMuted', 'false');
+    } else {
+        music.muted = true;
+        btn.textContent = '🔇';
+        localStorage.setItem('musicMuted', 'true');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const music = document.getElementById('bg-music');
+    const btn = document.querySelector('.music-btn');
+
+    const isMuted = localStorage.getItem('musicMuted') === 'true';
+
+    music.muted = isMuted;
+    if (!isMuted) {
+        music.play().catch(() => {});
+    }
+
+    if (btn) {
+        btn.textContent = isMuted ? '🔇' : '🔊';
+    }
+});
+</script>
+</body>
+</html>

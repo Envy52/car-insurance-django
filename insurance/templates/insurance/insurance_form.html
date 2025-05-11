@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container" style="max-width: 600px; margin: auto;">
+    <h2>Страховка</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="id_car_model">Модель машины:</label>
+            {{ form.car_model }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_policy_number">Номер полиса:</label>
+            {{ form.policy_number }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_insurance_date">Дата страховки:</label>
+            {{ form.insurance_date }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_expiry_date">Дата истечения срока:</label>
+            {{ form.expiry_date }}
+        </div>
+
+        <style>
+        .company-select {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #222;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .company-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #333;
+            transition: 0.2s;
+        }
+
+        .company-option:hover {
+            background: #444;
+        }
+
+        .company-option img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        .company-option.selected {
+            border: 2px solid #00ccff;
+        }
+
+        #company-input {
+            display: none;
+        }
+        </style>
+
+        <input type="hidden" name="company" id="company-input" value="{{ form.company.value|default:'INSON' }}">
+
+        <div class="form-group">
+            <label>Компания:</label>
+            <div class="company-select" id="company-list">
+                <div class="company-option" data-value="INSON">
+                    <img src="{% static 'logos/inson.png' %}" alt="INSON"> INSON
+                </div>
+                <div class="company-option" data-value="UzInsurance">
+                    <img src="{% static 'logos/uzinsurance.png' %}" alt="UzInsurance"> UzInsurance
+                </div>
+                <div class="company-option" data-value="KapitalSugurta">
+                    <img src="{% static 'logos/kapital.png' %}" alt="Kapital"> Kapital Sugurta
+                </div>
+            </div>
+        </div>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const options = document.querySelectorAll('.company-option');
+            const hiddenInput = document.getElementById('company-input');
+            const selectedValue = hiddenInput.value;
+
+            options.forEach(option => {
+                if (option.dataset.value === selectedValue) {
+                    option.classList.add('selected');
+                }
+
+                option.addEventListener('click', () => {
+                    options.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    hiddenInput.value = option.dataset.value;
+                });
+            });
+        });
+        </script>
+
+        <div class="form-group">
+            <label for="id_amount_paid">Сумма оплаты:</label>
+            {{ form.amount_paid }}
+        </div>
+
+        <button type="submit" class="btn-pay">Сохранить</button>
+    </form>
+</div>
+{% endblock %}

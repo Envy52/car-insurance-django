@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container" style="max-width: 600px; margin: auto; text-align: center;">
+    <h2>Профиль</h2>
+
+    <img src="{{ profile.avatar.url }}" alt="Аватар"
+         style="width: 140px; height: 140px; border-radius: 50%; object-fit: cover;
+                box-shadow: 0 0 12px #007aff; margin-bottom: 1rem;">
+
+    <p><strong>Имя:</strong> {{ profile.first_name|default:"–" }}</p>
+    <p><strong>Фамилия:</strong> {{ profile.last_name|default:"–" }}</p>
+
+    <p><strong>Логин:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+
+    <form method="post" enctype="multipart/form-data" style="margin-top: 2rem;">
+        {% csrf_token %}
+        <div style="margin-bottom: 10px;">
+            <label for="first_name">Редактировать имя:</label><br>
+            <input type="text" name="first_name" value="{{ profile.first_name|default:'' }}" placeholder="Введите имя">
+        </div>
+        <div style="margin-bottom: 10px;">
+            <label for="last_name">Редактировать фамилию:</label><br>
+            <input type="text" name="last_name" value="{{ profile.last_name|default:'' }}" placeholder="Введите фамилию">
+        </div>
+        <div style="margin-bottom: 10px;">
+            <label for="avatar">Изменить аватар:</label><br>
+            <input type="file" name="avatar" accept="image/*">
+        </div>
+        <button type="submit" class="btn-pay">Сохранить</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <h2>Ваши страховки</h2>
+    <a href="{% url 'insurance_create' %}" class="btn-add">+ Добавить новую</a>
+
+    {% if insurances %}
+        <div class="cards">
+            {% for i in insurances %}
+                <div class="card">
+                    <div class="card-header">
+                        <h3>{{ i.car_model }}</h3>
+                        <span class="policy">Полис: {{ i.policy_number }}</span>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Срок действия:</strong> {{ i.insurance_date }} — {{ i.expiry_date }}</p>
+
+                        <p><strong>Компания:</strong>
+                            {% if i.company == "INSON" %}
+                                <img src="{% static 'logos/inson.png' %}" alt="INSON" style="width:20px; vertical-align:middle; margin-right:5px;">
+                                INSON
+                            {% elif i.company == "UzInsurance" %}
+                                <img src="{% static 'logos/uzinsurance.png' %}" alt="UzInsurance" style="width:20px; vertical-align:middle; margin-right:5px;">
+                                UzInsurance
+                            {% elif i.company == "KapitalSugurta" %}
+                                <img src="{% static 'logos/kapital.png' %}" alt="Kapital" style="width:20px; vertical-align:middle; margin-right:5px;">
+                                Kapital Sugurta
+                            {% else %}
+                                {{ i.company }}
+                            {% endif %}
+                        </p>
+
+                        <p><strong>Оплачено:</strong>
+                            {% if i.is_paid %}
+                                ✅ {{ i.amount_paid }} ₽
+                            {% else %}
+                                ❌ Не оплачено
+                            {% endif %}
+                        </p>
+
+                        <div class="actions">
+                            <a href="{% url 'insurance_update' i.pk %}" class="btn-edit">✏️ Изменить</a>
+                            <a href="{% url 'insurance_delete' i.pk %}" class="btn-delete">🗑️ Удалить</a>
+                            {% if not i.is_paid %}
+                            <form method="get" action="{% url 'insurance_pay' i.pk %}" class="pay-form" style="display:inline;">
+                                <button type="submit" class="btn-pay">💳 Оплатить</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Пока нет активных страховок. Добавьте новую!</p>
+    {% endif %}
+</div>
+
+<audio id="engine-sound">
+    <source src="{% static 'audio/engine_start.mp3' %}" type="audio/mpeg">
+</audio>
+
+<style>
+@keyframes smooth-shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-1.5px); }
+  50% { transform: translateX(1.5px); }
+  75% { transform: translateX(-1.5px); }
+  100% { transform: translateX(0); }
+}
+.btn-pay.shake {
+  animation: smooth-shake 0.4s ease-in-out;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const sound = document.getElementById('engine-sound');
+    const payForms = document.querySelectorAll('.pay-form');
+
+    payForms.forEach(form => {
+        const button = form.querySelector('.btn-pay');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            sound.currentTime = 0;
+            sound.play();
+
+            const shakeInterval = setInterval(() => {
+                button.classList.add('shake');
+                setTimeout(() => button.classList.remove('shake'), 350);
+            }, 500);
+
+            setTimeout(() => {
+                clearInterval(shakeInterval);
+                button.style.transition = "opacity 0.8s ease-out";
+                button.style.opacity = "0";
+
+                setTimeout(() => {
+                    window.location.href = form.action;
+                }, 1000); // доп. 1 секунда перед переходом
+            }, 5000);
+        });
+    });
+});
+</script>
+{% endblock %}

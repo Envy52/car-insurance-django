@@ -1,0 +1,5 @@
+{% extends 'base.html' %}{% block content %}
+<h2>Удалить страховку?</h2>
+<form method="post">{% csrf_token %}
+<p>Точно удалить {{ insurance.car_model }}?</p>
+<button type="submit">Удалить</button></form>{% endblock %}
